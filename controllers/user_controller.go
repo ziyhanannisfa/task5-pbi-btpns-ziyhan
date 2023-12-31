@@ -1,5 +1,3 @@
-// controllers/user_controller.go
-
 package controllers
 
 import (
@@ -7,12 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"PBI/database" // Sesuaikan dengan struktur proyek Anda
+	"PBI/database"
 
 	"github.com/gin-gonic/gin"
 )
 
-// RegisterUser mendaftarkan pengguna baru
 func RegisterUser(c *gin.Context) {
 	var newUser models.User
 
@@ -21,7 +18,6 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	// Simpan pengguna ke database
 	if err := database.DB.Create(&newUser).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mendaftarkan pengguna"})
 		return
@@ -30,7 +26,6 @@ func RegisterUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"user": newUser})
 }
 
-// LoginUser untuk masuk pengguna
 func LoginUser(c *gin.Context) {
 	var loginData struct {
 		Email    string `json:"email" binding:"required"`
@@ -44,25 +39,19 @@ func LoginUser(c *gin.Context) {
 
 	var user models.User
 
-	// Temukan pengguna berdasarkan alamat email
 	if err := database.DB.Where("email = ?", loginData.Email).First(&user).Error; err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Email atau kata sandi salah"})
 		return
 	}
 
-	// Verifikasi kata sandi
 	if err := user.VerifyPassword(loginData.Password); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Email atau kata sandi salah"})
 		return
 	}
 
-	// Logika autentikasi JWT (gunakan paket JWT yang telah Anda instal)
-
-	// Return response
 	c.JSON(http.StatusOK, gin.H{"message": "Berhasil masuk", "token": "token_jwt_yang_dihasilkan"})
 }
 
-// UpdateUser memperbarui pengguna berdasarkan ID
 func UpdateUser(c *gin.Context) {
 	userID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
@@ -83,7 +72,6 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	// Perbarui atribut pengguna yang diizinkan
 	existingUser.Username = updatedUser.Username
 	existingUser.Email = updatedUser.Email
 
@@ -95,7 +83,6 @@ func UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"user": existingUser})
 }
 
-// DeleteUser menghapus pengguna berdasarkan ID
 func DeleteUser(c *gin.Context) {
 	userID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
@@ -103,7 +90,6 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
-	// Hapus pengguna dari database
 	if err := database.DB.Delete(&models.User{}, userID).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus pengguna"})
 		return

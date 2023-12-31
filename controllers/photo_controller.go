@@ -1,5 +1,3 @@
-// controllers/photo_controller.go
-
 package controllers
 
 import (
@@ -7,12 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"PBI/database" // Sesuaikan dengan struktur proyek Anda
+	"PBI/database"
 
 	"github.com/gin-gonic/gin"
 )
 
-// CreatePhoto membuat foto baru
 func CreatePhoto(c *gin.Context) {
 	var newPhoto models.Photo
 
@@ -21,7 +18,6 @@ func CreatePhoto(c *gin.Context) {
 		return
 	}
 
-	// Simpan foto ke database
 	if err := database.DB.Create(&newPhoto).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal membuat foto"})
 		return
@@ -30,7 +26,6 @@ func CreatePhoto(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"photo": newPhoto})
 }
 
-// GetPhotos mengambil semua foto dari database
 func GetPhotos(c *gin.Context) {
 	var photos []models.Photo
 
@@ -42,7 +37,6 @@ func GetPhotos(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"photos": photos})
 }
 
-// UpdatePhotoByID memperbarui foto berdasarkan ID
 func UpdatePhotoByID(c *gin.Context) {
 	photoID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
@@ -63,7 +57,6 @@ func UpdatePhotoByID(c *gin.Context) {
 		return
 	}
 
-	// Perbarui atribut foto yang diizinkan
 	existingPhoto.Title = updatedPhoto.Title
 	existingPhoto.Caption = updatedPhoto.Caption
 	existingPhoto.PhotoURL = updatedPhoto.PhotoURL
@@ -76,7 +69,6 @@ func UpdatePhotoByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"photo": existingPhoto})
 }
 
-// DeletePhotoByID menghapus foto berdasarkan ID
 func DeletePhotoByID(c *gin.Context) {
 	photoID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
@@ -84,7 +76,6 @@ func DeletePhotoByID(c *gin.Context) {
 		return
 	}
 
-	// Hapus foto dari database
 	if err := database.DB.Delete(&models.Photo{}, photoID).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus foto"})
 		return

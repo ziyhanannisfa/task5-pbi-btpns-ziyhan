@@ -21,6 +21,5 @@ type Photo struct {
 }
 
 func AutoMigrate() {
-	// Auto Migrate - create table based on the struct model
 	DB.AutoMigrate(&User{}, &Photo{})
 }
